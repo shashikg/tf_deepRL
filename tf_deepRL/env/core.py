@@ -1,10 +1,11 @@
-import tf_easyRL
+import tf_deepRL
 
 class Env(object):
-    observation_space = None
+    state_space = None
     action_space = None
     provider = None
     name = None
+    env = None
 
     def step(self, action):
         raise NotImplementedError
@@ -16,7 +17,10 @@ class Env(object):
         raise NotImplementedError
 
     def seed(self, seed=None):
-        raise NotImplementedError
+        return
 
     def close(self):
         pass
+
+    def ret_orig_env(self):
+        return self.env

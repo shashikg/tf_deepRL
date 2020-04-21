@@ -3,6 +3,8 @@ import tensorflow as tf
 from skvideo.io import FFmpegWriter as VideoWriter
 import time, io, base64
 from IPython import display
+from IPython.display import HTML
+import numpy as np
 
 class Memory:
   def __init__(self):
@@ -28,7 +30,7 @@ class Agent(object):
         discounted_rewards = np.zeros_like(self.memory.rewards)
         R = 0
         for t in range(len(self.memory.rewards)-1, -1, -1):
-            R = self.rewards[t] + R*self.gamma
+            R = self.memory.rewards[t] + R*self.gamma
             discounted_rewards[t] = R
 
         return discounted_rewards
@@ -39,7 +41,7 @@ class Agent(object):
     def calc_loss(self):
         raise NotImplementedError
 
-    def train(self, opt, episodes):
+    def train(self, opt, episodes, print_interval = 1):
         history = {}
         history['loss'] = []
         history['total_reward'] = []
@@ -50,7 +52,7 @@ class Agent(object):
 
             while True:
                 new_state, reward, action, done = self.take_action(state)
-                self.memory.add(new_state, reward, action)
+                self.memory.add(state, reward, action)
 
                 if done:
                     total_reward = sum(self.memory.rewards)
@@ -58,12 +60,13 @@ class Agent(object):
 
                     with tf.GradientTape() as tape:
                         loss = self.calc_loss()
-                        grads = tape.gradient(loss, self.model.trainable_variables)
-                        opt.apply_gradients(zip(grads, self.model.trainable_variables))
 
-                        history['loss'].append(loss.numpy())
+                    grads = tape.gradient(loss, self.model.trainable_variables)
+                    opt.apply_gradients(zip(grads, self.model.trainable_variables))
+                    history['loss'].append(loss.numpy())
 
-                    print("| Episode:", e, " | Loss:", history['loss'][-1], " | Total Rewards:", history['total_reward'][-1], "|")
+                    if e%print_interval == 0:
+                        print("| Episode:", e, " | Loss:", history['loss'][-1], " | Total Rewards:", history['total_reward'][-1], "|")
 
                     break
 
@@ -80,16 +83,18 @@ class Agent(object):
             new_state, reward, action, done = self.take_action(state)
 
             if stop_when_finish and done:
-                if !IPython_flag:
+                if IPython_flag == False:state = new_state
                     time.sleep(2)
                 self.env.close()
                 break
+            state = new_state
+        self.env.close()
 
         if mode == "io":
             for rendered_state in rendered_states:
                 display.clear_output(wait=True)
                 print(rendered_state)
-                time.sleep(1/5.0)
+                time.sleep(1/5.0)state = new_state
         elif mode == "img":
             filename = self.env.name + ".mp4"
             video = VideoWriter(filename)
@@ -97,6 +102,12 @@ class Agent(object):
                 video.writeFrame(rendered_state)
             video.close()
 
-            return filename
+            encoded = base64.b64encode(io.open(filename, 'r+b').read())
+            embedded = HTML(data='''
+                <video controls>
+                    <source src="data:video/mp4;base64,{0}" type="video/mp4" />
+                </video>'''.format(encoded.decode('ascii')))
+
+            return embedded
 
         return True

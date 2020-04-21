@@ -2,11 +2,12 @@ import tf_deepRL
 from tf_deepRL.env.core import Env
 import gym
 from pyvirtualdisplay import Display
+import numpy as np
 
 supported_env = ['CartPole-v0']
 
 class gymEnv(Env):
-    def __init__(name=None):
+    def __init__(self, name=None):
         if name in supported_env:
             pass
         else:
@@ -24,7 +25,7 @@ class gymEnv(Env):
     def step(self, action):
         state, reward, done, info = self.env.step(action)
 
-        if self.name == "CartPole-v0"
+        if self.name == "CartPole-v0":
             state = np.expand_dims(state, axis=0)
 
         return state, reward, done
@@ -32,14 +33,13 @@ class gymEnv(Env):
     def reset(self):
         state = self.env.reset()
 
-        if self.name == "CartPole-v0"
+        if self.name == "CartPole-v0":
             state = np.expand_dims(state, axis=0)
 
         return state
 
     def render(self, IPython_flag=False):
         if IPython_flag:
-            from pyvirtualdisplay import Display
             display = Display(visible=0, size=(400, 300))
             display.start()
 

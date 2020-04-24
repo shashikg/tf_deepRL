@@ -3,7 +3,7 @@ from tf_deepRL.env.openai_gym import gymEnv
 
 env_providers = ['OpenAI-gym']
 
-def load_env(provider="OpenAI-gym", name=None):
+def load_env(provider, name=None, virtual_display=False):
     env = None
     if provider in env_providers:
         pass
@@ -13,6 +13,6 @@ def load_env(provider="OpenAI-gym", name=None):
         raise KeyError("This environment provider is not supported. " + "Supported environment providers: " + err_txt[:-2])
 
     if provider == "OpenAI-gym":
-        env = gymEnv(name)
+        env = gymEnv(name, virtual_display=virtual_display)
 
     return env

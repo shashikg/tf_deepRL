@@ -27,7 +27,7 @@ class DisplayTrainStatus:
             print("Episode:", str(len(history['total_reward'])) + "/" + str(self.max_eps))
             print("["+ self.txt_r +"] - " + str(sec) + "s " + str(ms) + "ms/episode - rewards:", history['total_reward'][-1])
             self.txt_till_now.append("Episode: " + str(len(history['total_reward'])) + "/" + str(self.max_eps))
-            self.txt_till_now.append("[" + self.txt_r + "] - " + str(sec) + "s " + str(ms) + "ms/episode - rewards: " + str(history['total_reward'][-1]))
+            self.txt_till_now.append("[" + self.txt_r + "] - " + str(sec) + "s " + str(ms) + "ms/episode - rewards: " + str(np.mean(history['total_reward'][-self.status_interval:])))
             self.last_time = time.time()
         else:
             sec = int((time.time()-self.last_time)/col)

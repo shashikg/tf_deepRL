@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 from tf_deepRL.agents.core import Agent, Memory
 
-class VANILLA(Agent):
+class VPG(Agent):
     def __init__(self, policy_model, env, gamma=0.98):
         self.model = policy_model
         self.memory = Memory()

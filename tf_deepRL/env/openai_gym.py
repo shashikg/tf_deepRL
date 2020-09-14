@@ -5,7 +5,10 @@ from pyvirtualdisplay import Display
 import numpy as np
 import pyglet
 
-supported_env = ['CartPole-v0']
+supported_env = ['CartPole-v0', 'CartPole-v1', 'MountainCar-v0', 'MountainCarContinuous-v0',
+                 'Pendulum-v0', 'Acrobot-v1', 'BipedalWalker-v3',
+                 ]
+supported_env += ['Copy-v0']
 
 class gymEnv(Env):
     def __init__(self, name=None, virtual_display=False):
@@ -28,17 +31,13 @@ class gymEnv(Env):
 
     def step(self, action):
         state, reward, done, info = self.env.step(action)
-
-        if self.name == "CartPole-v0":
-            state = np.expand_dims(state, axis=0)
+        state = np.expand_dims(state, axis=0)
 
         return state, reward, done
 
     def reset(self):
         state = self.env.reset()
-
-        if self.name == "CartPole-v0":
-            state = np.expand_dims(state, axis=0)
+        state = np.expand_dims(state, axis=0)
 
         return state
 
